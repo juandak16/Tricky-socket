@@ -8,12 +8,14 @@ import io from "socket.io";
 import uuidv1 from "uuid/v1";
 
 const app = express();
+
 const httpServer = http.createServer(app);
+
 const socketIo = io(httpServer);
+
 let count_o = 0;
 let count_x = 0;
 let caract = '';
-
 let users = {};
 let game = {  
   playerWaiting: undefined,
@@ -44,7 +46,8 @@ let game = {
   end: false,
   gameStatus: {
     status: "waiting players"
-  }};
+  }
+};
 
 var count_user = 0;
 
@@ -55,7 +58,6 @@ app.get("/", (req, res) => {
 socketIo.on("connection", socket => {
   var address = socket.request.connection.remoteAddress.substr(7);
   console.log('New connection from:    ' + address);
-  //console.log(`user have connected: ${socket.id}`);
   
   // update users array adding the new user
   users = { ...users, [socket.id]: { 
@@ -108,14 +110,12 @@ socketIo.on("connection", socket => {
     delete users[socket.id];
 
     count_user--;
-    //console.log('cantidad: ',count_user);
 
     // broadcast games to current users
     socketIo.emit("game_update", game);
 
     // broadcast users to all clients
     socketIo.emit("user_update", users);
-    //console.log(game);
   });
 
   socket.on("name_update", user_name => {
@@ -160,11 +160,6 @@ socketIo.on("connection", socket => {
   });
 
   socket.on('leave_game', data => {
-    /*Object.keys(users).map(key => {
-      if (users[key].id === socket.id) {
-        delete games[key];
-      }
-    })*/
     if(data.game.playerOne === data.userKey){
       delete game.playerOne;
     }
@@ -254,14 +249,11 @@ const counting_moves = () => {
     function(linea, i) {
       linea.map(
         function (casilla, j) {
-          //console.log(game.tablero[i][j]);
           if(game.tablero[i][j] !== null){
             if(game.tablero[i][j].jugador === 'X'){
-              //console.log('conto X');
               count_x++;
             }
             if(game.tablero[i][j].jugador === 'O'){
-              //console.log('conto O');
               count_o++;
             }
           }
@@ -269,9 +261,6 @@ const counting_moves = () => {
       )
     }
   )
-  //console.log('cantidad de X:', count_x);
-  //console.log('cantidad de O:', count_o);
-
 };
 
 const check_ip = (socket) => {
@@ -284,9 +273,6 @@ const check_ip = (socket) => {
   //permite 1 conexiones por ip
   if(cont > 1){
     console.log('repetido');
-    //delete users[socket];
-    // broadcast users to all clients
-    //socketIo.emit("user_update", users);
     socketIo.emit("disconnect",socket);
   }
 }
@@ -337,12 +323,9 @@ const checkVictory= (posi,posj) => {
               if(posi+i+i >=0 && posj+j+j >= 0 && posi+i+i<=2 && posj+j+j <= 2){
                 if(game.tablero[posi+i+i][posj+j+j] !== null){
                   if(game.tablero[posi+i+i][posj+j+j].jugador === caract){
-                    //console.log(`consegui ${caract} en: ${posi+i+i} , ${posj+j+j}`);
                     if(game.turn === 1){
-                      //console.log('Victory Player One');
                       game.end = true;
                     }else{
-                      //console.log('Victory Player Two');
                       game.end = true;
                     }
                   }
@@ -352,12 +335,9 @@ const checkVictory= (posi,posj) => {
               if(posi-i >=0 && posj-j >= 0 && posi-i <=2 && posj-j <= 2){
                 if(game.tablero[posi-i][posj-j] !== null){
                   if(game.tablero[posi-i][posj-j].jugador === caract){
-                    //console.log(`consegui ${caract} en: ${posi-i} , ${posj-j}`);
                     if(game.turn === 1){
-                      //console.log('Victory Player One');
                       game.end = true;
                     }else{
-                      //console.log('Victory Player Two');
                       game.end = true;
                     }
                   }
